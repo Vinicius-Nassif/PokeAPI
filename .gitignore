@@ -1,0 +1,14 @@
+# vs code folder
+.vscode/
+
+# environment folder
+venv/*
+.pyenv/*
+
+#secrets
+.env
+
+# retirando pycache
+*/__pycache__/*
+__pycache__/
+
