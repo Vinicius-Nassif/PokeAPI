@@ -2,18 +2,15 @@ from app import app, db
 from flask import Flask, jsonify, request
 from app.models import Pokemon, Team
 
-# Lista fictícia de times de Pokémon
-teams_data = []
-
 # Rota para obter todos os times
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
     # Lista para armazenar times serializados
     serialized_teams = []
-    # Itera sobre os dados de times fictícios
-    for index, team_data in enumerate(teams_data):
-        # Cria uma instância da classe Team a partir dos dados
-        team = Team(team_data['username'], team_data['pokemons'])  # Usar a lista direta de Pokémon
+    # Consulta todos os times no banco de dados
+    teams = Team.query.all()
+
+    for team in teams:
         # Lista para armazenar Pokémon serializados
         serialized_pokemons = []
         for pokemon in team.pokemons:
@@ -27,7 +24,7 @@ def get_teams():
 
         # Serializa os dados do time
         serialized_team = {
-            "owner": team_data['username'],
+            "owner": team.username,
             "pokemons": serialized_pokemons
         }
 
@@ -40,11 +37,10 @@ def get_teams():
 # Rota para obter um time por ID
 @app.route('/api/teams/<int:id>', methods=['GET'])
 def get_team_by_id(id):
-    if id < 0 or id >= len(teams_data):
+    team = Team.query.get(id)
+
+    if not team:
         return jsonify({"error": "Time não encontrado"}), 404
-    team_data = teams_data[id]
-    # Cria uma instância da classe Team a partir dos dados
-    team = Team(team_data['username'], team_data['pokemons'])  # Usar a lista direta de Pokémon
 
     # Lista para armazenar Pokémon serializados
     serialized_pokemons = []
@@ -59,7 +55,7 @@ def get_team_by_id(id):
 
     # Serializa os dados do time
     serialized_team = {
-        "owner": team_data['username'],
+        "owner": team.username,
         "pokemons": serialized_pokemons
     }
 
@@ -84,12 +80,11 @@ def create_team():
     for pokemon_data in pokemons_data:
         # Extrai os campos do Pokémon
         name = pokemon_data.get('name')
-        id = pokemon_data.get('id')
         height = pokemon_data.get('height')
         weight = pokemon_data.get('weight')
 
         # Verifica se os campos do Pokémon estão presentes
-        if not name or not id or not height or not weight:
+        if not name or not height or not weight:
             return jsonify({"error": "Campos de Pokémon em falta"}), 400
 
         # Cria instâncias de Pokemon com os campos corretos
@@ -99,9 +94,9 @@ def create_team():
     # Cria uma instância de Team com os campos corretos
     team = Team(username=username, pokemons=pokemons)
 
-    # Armazena o time fictício em 'teams_data' (você pode usar um banco de dados em vez disso)
-    teams_data.append({"username": username, "pokemons": pokemons})
+    # Adiciona o time à sessão
+    db.session.add(team)
+    db.session.commit()
 
     # Retorna uma mensagem de validação e a ID única (o índice na lista é uma abordagem simples)
-    team_id = len(teams_data) 
-    return jsonify({"message": "Time criado com sucesso", "team_id": team_id}), 201
+    return jsonify({"message": "Time criado com sucesso", "team_id": team.id}), 201
