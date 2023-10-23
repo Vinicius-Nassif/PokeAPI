@@ -1,15 +1,16 @@
 from app import app, db
 from flask import Flask, jsonify, request
+from flask_json import FlaskJSON
 from app.models import Pokemon, Team
 import requests
 
 # Função para buscar informações sobre um Pokémon na pokeapi.co
-def get_pokemon_info(pokemon_name):
+def get_pokemon_info(pokemon_name, offset=0, limit=10):
     # URL base da pokeapi.co
     base_url = "https://pokeapi.co/api/v2/pokemon/"
 
-    # Monta a URL completa para buscar informações do Pokémon
-    url = f"{base_url}{pokemon_name}/"
+    # Monta a URL completa para buscar informações do Pokémon com paginação
+    url = f"{base_url}{pokemon_name}/?offset={offset}&limit={limit}"
 
     try:
         # Faz uma solicitação GET para a pokeapi.co
@@ -75,14 +76,16 @@ def create_team():
 # Rota para obter todos os times
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
-    # Lista para armazenar times serializados
-    serialized_teams = []
     # Consulta todos os times no banco de dados
     teams = Team.query.all()
+
+    # Lista para armazenar times serializados
+    serialized_teams = []
 
     for team in teams:
         # Lista para armazenar Pokémon serializados
         serialized_pokemons = []
+
         for pokemon in team.pokemons:
             # Serializa os dados do Pokémon
             serialized_pokemons.append({
@@ -101,7 +104,7 @@ def get_teams():
         # Adiciona o time serializado à lista
         serialized_teams.append(serialized_team)
 
-    # Retorna os times serializados como uma resposta JSON
+    # Retorna os times serializados como uma resposta JSON usando jsonify
     return jsonify(serialized_teams)
 
 # Rota para obter um time por ID
@@ -114,6 +117,7 @@ def get_team_by_id(id):
 
     # Lista para armazenar Pokémon serializados
     serialized_pokemons = []
+
     for pokemon in team.pokemons:
         # Serializa os dados do Pokémon
         serialized_pokemons.append({
@@ -129,5 +133,5 @@ def get_team_by_id(id):
         "pokemons": serialized_pokemons
     }
 
-    # Retorna o time serializado como uma resposta JSON
+    # Retorna o time serializado como uma resposta JSON usando jsonify
     return jsonify(serialized_team)

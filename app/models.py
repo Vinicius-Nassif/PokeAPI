@@ -1,4 +1,5 @@
 from app import db
+from collections import OrderedDict
 
 # Definição da classe Team
 class Team(db.Model):
@@ -16,11 +17,11 @@ class Team(db.Model):
 
     # Método para converter o objeto em um dicionário
     def to_dict(self):
-        return {
+        return OrderedDict({
             "id": self.id,
             "username": self.username,
             "pokemons": [pokemon.to_dict() for pokemon in self.pokemons]
-        }
+        })
 
 # Definição da classe Pokemon
 class Pokemon(db.Model):
@@ -46,9 +47,9 @@ class Pokemon(db.Model):
 
     # Método para converter o objeto em um dicionário
     def to_dict(self):
-        return {
+        return OrderedDict({
             "id": self.id,
             "name": self.name,
             "height": self.height,
             "weight": self.weight
-        }
+        })
