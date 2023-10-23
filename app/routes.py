@@ -13,8 +13,10 @@ def get_pokemon_info(pokemon_name, offset=0, limit=10):
     url = f"{base_url}{pokemon_name}/?offset={offset}&limit={limit}"
 
     try:
+        # Cria uma uma sessão em cada interação, permitindo que a conexão seja mantida aberta
         # Faz uma solicitação GET para a pokeapi.co
-        response = requests.get(url)
+        session = requests.Session()
+        response = session.get(url)
 
         if response.status_code == 200:
             # Converte os dados da resposta em JSON
@@ -73,14 +75,16 @@ def create_team():
     # Retorna uma mensagem de validação e a ID única (o índice na lista é uma abordagem simples)
     return jsonify({"message": "Time criado com sucesso", "team_id": team.id}), 201
 
-# Rota para obter todos os times
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
     # Consulta todos os times no banco de dados
     teams = Team.query.all()
+    
+    # Dicionário para armazenar times serializados com índices
+    serialized_teams_with_index = {}
 
-    # Lista para armazenar times serializados
-    serialized_teams = []
+    # Inicialize o índice
+    index = 1
 
     for team in teams:
         # Lista para armazenar Pokémon serializados
@@ -101,11 +105,14 @@ def get_teams():
             "pokemons": serialized_pokemons
         }
 
-        # Adiciona o time serializado à lista
-        serialized_teams.append(serialized_team)
+        # Associe o time serializado ao índice no dicionário
+        serialized_teams_with_index[index] = serialized_team
 
-    # Retorna os times serializados como uma resposta JSON usando jsonify
-    return jsonify(serialized_teams)
+        # Incrementar o índice
+        index += 1
+
+    # Retorna o dicionário com os times serializados com índices como uma resposta JSON usando jsonify
+    return jsonify(serialized_teams_with_index)
 
 # Rota para obter um time por ID
 @app.route('/api/teams/<int:id>', methods=['GET'])
