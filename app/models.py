@@ -27,7 +27,7 @@ class Pokemon(db.Model):
     # Coluna para o ID 
     id = db.Column(db.Integer, primary_key=True)
     # Coluna para o nome do Pokémon
-    name = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     # Coluna para a altura do Pokémon
     height = db.Column(db.Integer, nullable=False)
     # Coluna para o peso do Pokémon
@@ -38,7 +38,8 @@ class Pokemon(db.Model):
     team = db.relationship('Team', back_populates='pokemons')
 
     # Construtor da classe
-    def __init__(self, name, height, weight):
+    def __init__(self, id, name, height, weight):
+        self.id = id
         self.name = name
         self.height = height
         self.weight = weight
