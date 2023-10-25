@@ -39,7 +39,6 @@ def get_pokemon_info(pokemon_name, offset=0, limit=10):
     except requests.exceptions.RequestException as e:
         return {"error": "Erro na solicitação à pokeapi.co. Verifique sua conexão de rede."}, 500
     
-# Rota para criar um novo time
 @app.route('/api/teams', methods=['POST'])
 def create_team():
     data = request.get_json()
@@ -53,20 +52,28 @@ def create_team():
     for pokemon_data in pokemons_data:
         name = pokemon_data.get('name')
 
-        # Chama a função get_pokemon_info para obter informações do Pokémon
-        pokemon_info = get_pokemon_info(name)
+        # Busca o Pokémon pelo nome no banco de dados
+        existing_pokemon = Pokemon.query.filter_by(name=name).first()
 
-        if 'error' in pokemon_info:
-            return jsonify(pokemon_info), 400
+        if existing_pokemon:
+            # Se o Pokémon já existe, apenas o associe à equipe
+            pokemons.append(existing_pokemon)
+        else:
+            # Caso contrário, obtenha as informações do Pokémon
+            pokemon_info = get_pokemon_info(name)
 
-        # Preenche os campos do Pokémon com as informações obtidas
-        pokemon_id = pokemon_info['id']
-        height = pokemon_info['height']
-        weight = pokemon_info['weight']
+            if 'error' in pokemon_info:
+                return jsonify(pokemon_info), 400
 
-        # Cria uma instância de Pokemon com os campos corretos
-        new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
-        pokemons.append(new_pokemon)
+            # Preencha os campos do Pokémon com as informações obtidas
+            pokemon_id = pokemon_info['id']
+            height = pokemon_info['height']
+            weight = pokemon_info['weight']
+
+            # Crie uma nova instância de Pokemon e adicione ao banco de dados
+            new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
+            db.session.add(new_pokemon)
+            pokemons.append(new_pokemon)
 
     team = Team(username=username, pokemons=pokemons)
     db.session.add(team)
