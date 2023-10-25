@@ -42,16 +42,14 @@ def get_pokemon_info(pokemon_name, offset=0, limit=10):
 @app.route('/api/teams', methods=['POST'])
 def create_team():
     data = request.get_json()
-    username = data.get('username')
-    pokemons_data = data.get('pokemons')
+    username = data.get('user')
+    pokemon_names = data.get('team')
 
-    if not username or not pokemons_data:
+    if not username or not pokemon_names:
         return jsonify({"error": "Campos obrigatórios em falta"}), 400
 
     pokemons = []
-    for pokemon_data in pokemons_data:
-        name = pokemon_data.get('name')
-
+    for name in pokemon_names:
         # Busca o Pokémon pelo nome no banco de dados
         existing_pokemon = Pokemon.query.filter_by(name=name).first()
 
@@ -59,7 +57,7 @@ def create_team():
             # Se o Pokémon já existe, apenas o associe à equipe
             pokemons.append(existing_pokemon)
         else:
-            # Caso contrário, obtenha as informações do Pokémon
+            # Obtenha as informações do Pokémon a partir da pokeapi.co
             pokemon_info = get_pokemon_info(name)
 
             if 'error' in pokemon_info:
