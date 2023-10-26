@@ -49,49 +49,102 @@ def create_team():
         return jsonify({"error": "Campos obrigatórios em falta"}), 400
 
     pokemons = []
-    for name in pokemon_names:
-        # Busca o Pokémon pelo nome no banco de dados
-        existing_pokemon = Pokemon.query.filter_by(name=name).first()
+    invalid_pokemon_names = []
 
-        if existing_pokemon:
-            # Se o Pokémon já existe, apenas o associe à equipe
-            pokemons.append(existing_pokemon)
-        else:
-            # Obtenha as informações do Pokémon a partir da pokeapi.co
-            pokemon_info = get_pokemon_info(name)
+    try:
+        for name in pokemon_names:
+            existing_pokemon = Pokemon.query.filter_by(name=name).first()
 
-            if 'error' in pokemon_info:
-                return jsonify(pokemon_info), 400
+            if existing_pokemon:
+                pokemons.append(existing_pokemon)
+            else:
+                try:
+                    # Tente obter as informações do Pokémon a partir da pokeapi.co
+                    pokemon_info = get_pokemon_info(name)
+                except Exception as e:
+                    # Se ocorrer um erro ao obter informações do Pokémon, capture a exceção
+                    invalid_pokemon_names.append(name)
+                else:
+                    # Se as informações do Pokémon foram obtidas com sucesso
+                    pokemon_id = pokemon_info['id']
+                    height = pokemon_info['height']
+                    weight = pokemon_info['weight']
 
-            # Preencha os campos do Pokémon com as informações obtidas
-            pokemon_id = pokemon_info['id']
-            height = pokemon_info['height']
-            weight = pokemon_info['weight']
+                    # Crie uma nova instância de Pokemon e adicione ao banco de dados
+                    new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
+                    db.session.add(new_pokemon)
+                    pokemons.append(new_pokemon)
+    except Exception as e:
+        # Se ocorrer um erro inesperado, capture a exceção e retorne uma mensagem de erro 500
+        return jsonify({"error": f"Ocorreu um erro ao processar a requisição: {str(e)}"}), 500
 
-            # Crie uma nova instância de Pokemon e adicione ao banco de dados
-            new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
-            db.session.add(new_pokemon)
-            pokemons.append(new_pokemon)
+    if invalid_pokemon_names:
+        return jsonify({"error": f"Os seguintes Pokémon não foram encontrados: {', '.join(invalid_pokemon_names)}"}), 400
 
     team = Team(username=username, pokemons=pokemons)
     db.session.add(team)
-    db.session.commit()
 
-    # Retorna uma mensagem de validação e a ID única (o índice na lista é uma abordagem simples)
+    try:
+        db.session.commit()
+    except Exception as e:
+        # Se ocorrer um erro ao salvar os dados no banco de dados, capture a exceção e retorne uma mensagem de erro 500
+        db.session.rollback()
+        return jsonify({"error": f"Ocorreu um erro ao salvar os dados no banco de dados: {str(e)}"}), 500
+
     return jsonify({"message": "Time criado com sucesso", "team_id": team.id}), 201
+
 
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
-    # Consulta todos os times no banco de dados
-    teams = Team.query.all()
-    
-    # Dicionário para armazenar times serializados com índices
-    serialized_teams_with_index = {}
+    try:
+        # Consulta todos os times no banco de dados
+        teams = Team.query.all()
+        # Verifique se a lista de times está vazia
+        if not teams:
+            return jsonify({"error": "Nenhum time encontrado"}), 404
+        # Dicionário para armazenar times serializados com índices
+        serialized_teams_with_index = {}
+        # Inicialize o índice
+        index = 1
 
-    # Inicialize o índice
-    index = 1
+        for team in teams:
+            # Lista para armazenar Pokémon serializados
+            serialized_pokemons = []
 
-    for team in teams:
+            for pokemon in team.pokemons:
+                # Serializa os dados do Pokémon
+                serialized_pokemons.append({
+                    "id": pokemon.id,
+                    "name": pokemon.name,
+                    "weight": pokemon.weight,
+                    "height": pokemon.height
+                })
+
+            # Serializa os dados do time
+            serialized_team = {
+                "owner": team.username,
+                "pokemons": serialized_pokemons
+            }
+
+            # Associe o time serializado ao índice no dicionário
+            serialized_teams_with_index[index] = serialized_team
+            # Incrementar o índice
+            index += 1
+
+        # Retorna o dicionário com os times serializados com índices como uma resposta JSON usando jsonify
+        return jsonify(serialized_teams_with_index)
+    except Exception as e:
+        # Se ocorrer um erro inesperado, capture a exceção e retorne uma mensagem de erro 500
+        return jsonify({"error": f"Ocorreu um erro ao processar a requisição: {str(e)}"}), 500
+
+@app.route('/api/teams/<int:id>', methods=['GET'])
+def get_team_by_id(id):
+    try:
+        team = Team.query.get(id)
+
+        if not team:
+            return jsonify({"error": "Time não encontrado"}), 404
+
         # Lista para armazenar Pokémon serializados
         serialized_pokemons = []
 
@@ -110,40 +163,8 @@ def get_teams():
             "pokemons": serialized_pokemons
         }
 
-        # Associe o time serializado ao índice no dicionário
-        serialized_teams_with_index[index] = serialized_team
-
-        # Incrementar o índice
-        index += 1
-
-    # Retorna o dicionário com os times serializados com índices como uma resposta JSON usando jsonify
-    return jsonify(serialized_teams_with_index)
-
-# Rota para obter um time por ID
-@app.route('/api/teams/<int:id>', methods=['GET'])
-def get_team_by_id(id):
-    team = Team.query.get(id)
-
-    if not team:
-        return jsonify({"error": "Time não encontrado"}), 404
-
-    # Lista para armazenar Pokémon serializados
-    serialized_pokemons = []
-
-    for pokemon in team.pokemons:
-        # Serializa os dados do Pokémon
-        serialized_pokemons.append({
-            "id": pokemon.id,
-            "name": pokemon.name,
-            "weight": pokemon.weight,
-            "height": pokemon.height
-        })
-
-    # Serializa os dados do time
-    serialized_team = {
-        "owner": team.username,
-        "pokemons": serialized_pokemons
-    }
-
-    # Retorna o time serializado como uma resposta JSON usando jsonify
-    return jsonify(serialized_team)
+        # Retorna o time serializado como uma resposta JSON usando jsonify
+        return jsonify(serialized_team)
+    except Exception as e:
+        # Se ocorrer um erro inesperado, capture a exceção e retorne uma mensagem de erro 500
+        return jsonify({"error": f"Ocorreu um erro ao processar a requisição: {str(e)}"}), 500

@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 # Nova tabela de associação entre equipes e Pokémon
 team_pokemon_association = db.Table('team_pokemon_association',
+    db.Column('id', db.Integer, primary_key=True),
     db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
     db.Column('pokemon_id', db.Integer, db.ForeignKey('pokemon.id'))
 )
