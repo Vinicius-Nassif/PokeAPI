@@ -5,14 +5,14 @@ Este projeto é uma API de criação e gerenciamento de equipes de Pokémon. Voc
 O projeto está organizado da seguinte forma:
 ```
 project_folder/
-    app/
-        __init__.py
-        models.py
-        routes.py
-    venv/
-    config.py
-    run.py
-    times.db
+├── app/
+│   └── __init__.py
+│   └── models.py
+│   └── routes.py
+├── venv/
+├── config.py
+├── run.py
+├── times.db
 ```
 - **app**: Pasta que contém os arquivos relacionados à sua aplicação Flask.
 - **venv**: Pasta que contém o ambiente virtual.
@@ -27,23 +27,27 @@ O arquivo `__init__.py` inicializa a aplicação Flask e configura o banco de da
 
 ### `models.py`
 
-O arquivo models.py define os modelos de dados da aplicação. Aqui estão as principais classes:
+O arquivo `models.py` define os modelos de dados da aplicação. Aqui estão as principais classes:
+#### TeamPokemonAssociation: Representa a associação entre equipes e Pokémon:
+- **id**: Identificação da associação.
+- **team_id**: Identificação do time que criou a equipe (chave estrangeira)
+- **pokemon_id**: Identificação do pokémon pertecente a equipe (chave estrangeira)
 
 #### Team: Representa uma equipe de Pokémon. Possui as seguintes propriedades:
 
-- id: Identificação única da equipe.
-- username: Nome do usuário que criou a equipe.
-- pokemons: Relação com os Pokémon na equipe.
+- **id**: Identificação única da equipe.
+- **username**: Nome do usuário que criou a equipe.
+- **pokemons**: Relação com os Pokémon na equipe.
 
 #### Pokemon: Representa um Pokémon. Possui as seguintes propriedades:
 
-- id: Identificação única do Pokémon.
-- name: Nome do Pokémon.
-- height: Altura do Pokémon.
-- weight: Peso do Pokémon.
+- **id**: Identificação única do Pokémon.
+- **name**: Nome do Pokémon.
+- **height**: Altura do Pokémon.
+- **weight**: Peso do Pokémon.
 
 ### `routes.py`
-O arquivo routes.py define as rotas da API e contém a lógica de negócios para criar equipes, listar equipes e buscar equipes por ID. Aqui estão as rotas principais:
+O arquivo `routes.py` define as rotas da API e contém a lógica de negócios para criar equipes, listar equipes e buscar equipes por ID. Aqui estão as rotas principais:
 
 - **POST /api/teams**: Cria uma nova equipe de Pokémon. O usuário fornece um nome de usuário e uma lista de nomes de Pokémon.
 - **GET /api/teams**: Lista todas as equipes registradas.
@@ -105,7 +109,7 @@ Isso restaurará seu ambiente Python para o padrão do sistema.
 ### Inicialização da Aplicação
 Para iniciar a aplicação, execute o arquivo `run.py`. Isso inicializará o servidor de desenvolvimento do Flask.
 
-Certifique-se de criar um ambiente virtual (venv) e instalar todas as dependências antes de executar a aplicação. Você pode fazer isso executando:
+Certifique-se de instalar todas as dependências no ambinente virtual antes de executar a aplicação. Você pode fazer isso executando:
 
 ```
 pip install -r requirements.txt
@@ -115,7 +119,7 @@ pip install -r requirements.txt
 A API permite que você crie e gerencie equipes de Pokémon. Aqui estão algumas operações que você pode realizar:
 
 #### Criar uma nova equipe de Pokémon
-Para criar uma nova equipe, faça uma solicitação POST para /api/teams com os seguintes dados no corpo da solicitação:
+Para criar uma nova equipe, faça uma solicitação POST para **/api/teams** com os seguintes dados no corpo da solicitação:
 
 ``` json
 {
@@ -139,10 +143,10 @@ A API retornará uma mensagem de sucesso junto com a ID única da equipe criada.
 Para listar todas as equipes registradas, faça uma solicitação GET para /api/teams. A API retornará uma lista de todas as equipes com detalhes dos Pokémon em formato JSON.
 
 ### Buscar uma equipe por ID
-Para buscar uma equipe específica por sua ID única, faça uma solicitação GET para /api/teams/{id}, onde {id} é a ID da equipe desejada. A API retornará detalhes da equipe, incluindo os Pokémon que a compõem.
+Para buscar uma equipe específica por sua ID única, faça uma solicitação GET para **/api/teams/{id}**, onde {id} é a ID da equipe desejada. A API retornará detalhes da equipe, incluindo os Pokémon que a compõem.
 
 ## Observações
-Certifique-se de configurar corretamente a chave secreta e a URI do banco de dados no arquivo config.py. O projeto utiliza um banco de dados SQLite por padrão.
+Certifique-se de configurar corretamente a URI do banco de dados no arquivo config.py. O projeto utiliza um banco de dados SQLite por padrão.
 
 ## Desenvolvedor
 Este projeto foi desenvolvido por **Vinícius Brandão Nassif** como parte do desafio da **Triágil** para demonstrar habilidades em desenvolvimento de API e Docker.
