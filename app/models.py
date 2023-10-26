@@ -2,7 +2,8 @@ from app import db
 from collections import OrderedDict
 
 # Nova tabela de associação entre equipes e Pokémon
-team_pokemon_association = db.Table('team_pokemon_association',
+team_pokemon_association = db.Table(
+    'team_pokemon_association',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('team_id', db.Integer, db.ForeignKey('team.id')),
     db.Column('pokemon_id', db.Integer, db.ForeignKey('pokemon.id'))
@@ -14,8 +15,7 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # Coluna para o nome de usuário
     username = db.Column(db.String(50), nullable=False)
-    # Relação com a tabela Pokemon
-    # pokemons = db.relationship('Pokemon', back_populates='team')
+    # Relação com a tabela team_pokemon_association
     pokemons = db.relationship('Pokemon', secondary=team_pokemon_association, back_populates='teams')
 
     # Construtor da classe
@@ -43,8 +43,7 @@ class Pokemon(db.Model):
     weight = db.Column(db.Integer, nullable=False)
     # Coluna de chave estrangeira para relacionamento com a classe Team
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
-    # Relação com a classe Team
-    #team = db.relationship('Team', back_populates='pokemons')
+    # Relação com a classe Team e tabela team_pokemon_association
     teams = db.relationship('Team', secondary=team_pokemon_association, back_populates='pokemons')
 
     # Construtor da classe
