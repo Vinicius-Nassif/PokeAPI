@@ -141,13 +141,88 @@ A API retornará uma mensagem de sucesso junto com a ID única da equipe criada.
 
 ### Listar todas as equipes
 Para listar todas as equipes registradas, faça uma solicitação GET para /api/teams. A API retornará uma lista de todas as equipes com detalhes dos Pokémon em formato JSON.
+```json
+"1": {
+        "owner": "n_team",
+        "pokemons": [
+            {
+                "height": 19,
+                "id": 59,
+                "name": "arcanine",
+                "weight": 1550
+            },
+            {
+                "height": 15,
+                "id": 94,
+                "name": "gengar",
+                "weight": 405
+            },
+            {
+                "height": 20,
+                "id": 150,
+                "name": "mewtwo",
+                "weight": 1220
+            }
+        ]
+    },
+    "2": {
+        "owner": "n_team_2",
+        "pokemons": [
+            {
+                "height": 25,
+                "id": 131,
+                "name": "lapras",
+                "weight": 2200
+            },
+            {
+                "height": 4,
+                "id": 151,
+                "name": "mew",
+                "weight": 40
+            },
+            {
+                "height": 4,
+                "id": 25,
+                "name": "pikachu",
+                "weight": 60
+            }
+        ]
+    }
+```
 
 ### Buscar uma equipe por ID
 Para buscar uma equipe específica por sua ID única, faça uma solicitação GET para **/api/teams/{id}**, onde {id} é a ID da equipe desejada. A API retornará detalhes da equipe, incluindo os Pokémon que a compõem.
+```json
+{
+    "owner": "n_team",
+    "pokemons": [
+        {
+            "height": 19,
+            "id": 59,
+            "name": "arcanine",
+            "weight": 1550
+        },
+        {
+            "height": 15,
+            "id": 94,
+            "name": "gengar",
+            "weight": 405
+        },
+        {
+            "height": 20,
+            "id": 150,
+            "name": "mewtwo",
+            "weight": 1220
+        }
+    ]
+}
+```
+## Serialização de Dados
+Nas rotas da nossa API, optamos por realizar a serialização dos dados antes de enviá-los como resposta. A serialização é o processo de converter objetos complexos em um formato que seja mais adequado para transmissão e interpretação por outros sistemas. 
+O intuíto da serialização foi principalmente para tentar manter os dados retornados pela API em formato estruturado, pela legibilidade e redução de dados redudantes.
 
 ## Observações
 Certifique-se de configurar corretamente a URI do banco de dados no arquivo config.py. O projeto utiliza um banco de dados SQLite por padrão.
 
 ## Desenvolvedor
 Este projeto foi desenvolvido por **Vinícius Brandão Nassif** como parte do desafio da **Triágil** para demonstrar habilidades em desenvolvimento de API e Docker.
-

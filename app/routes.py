@@ -41,13 +41,16 @@ def get_pokemon_info(pokemon_name, offset=0, limit=10):
     
 @app.route('/api/teams', methods=['POST'])
 def create_team():
+    # Obtem os dados JSON da requisição, nome do usuário e da equipe de Pokémons
     data = request.get_json()
     username = data.get('user')
     pokemon_names = data.get('team')
 
     if not username or not pokemon_names:
+        # Se o nome de usuário ou a equipe de Pokémon estiverem ausentes, retorne um erro de falta de campos
         return jsonify({"error": "Campos obrigatórios em falta"}), 400
 
+    # Listas para armazenar Pokémons válidos e inválidos
     pokemons = []
     invalid_pokemon_names = []
 
@@ -61,24 +64,27 @@ def create_team():
                 try:
                     # Tente obter as informações do Pokémon a partir da pokeapi.co
                     pokemon_info = get_pokemon_info(name)
+                    if "error" in pokemon_info(name):
+                        invalid_pokemon_names.append(name)
+                    else:
+                        # Se as informações do Pokémon foram obtidas com sucesso
+                        pokemon_id = pokemon_info['id']
+                        height = pokemon_info['height']
+                        weight = pokemon_info['weight']
+
+                        # Crie uma nova instância de Pokemon e adicione ao banco de dados
+                        new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
+                        db.session.add(new_pokemon)
+                        pokemons.append(new_pokemon)
                 except Exception as e:
                     # Se ocorrer um erro ao obter informações do Pokémon, capture a exceção
                     invalid_pokemon_names.append(name)
-                else:
-                    # Se as informações do Pokémon foram obtidas com sucesso
-                    pokemon_id = pokemon_info['id']
-                    height = pokemon_info['height']
-                    weight = pokemon_info['weight']
-
-                    # Crie uma nova instância de Pokemon e adicione ao banco de dados
-                    new_pokemon = Pokemon(name=name, height=height, weight=weight, id=pokemon_id)
-                    db.session.add(new_pokemon)
-                    pokemons.append(new_pokemon)
     except Exception as e:
         # Se ocorrer um erro inesperado, capture a exceção e retorne uma mensagem de erro 500
         return jsonify({"error": f"Ocorreu um erro ao processar a requisição: {str(e)}"}), 500
 
     if invalid_pokemon_names:
+        # Se o nome digitado do Pokémon não for encontrado, retorne a mensagem com erro 400
         return jsonify({"error": f"Os seguintes Pokémon não foram encontrados: {', '.join(invalid_pokemon_names)}"}), 400
 
     team = Team(username=username, pokemons=pokemons)
