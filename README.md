@@ -13,12 +13,16 @@ project_folder/
 ├── config.py
 ├── run.py
 ├── times.db
+├── docker-compose.yml
+├── Dockerfile
 ```
 - **app**: Pasta que contém os arquivos relacionados à sua aplicação Flask.
 - **venv**: Pasta que contém o ambiente virtual.
 - **config.py**: Arquivo de configuração da aplicação.
 - **run.py**: Arquivo para iniciar a aplicação.
-- **times.db**: Arquivo de banco de dados
+- **times.db**: Arquivo de banco de dados.
+- **docker-compose.yml**: Arquivo para definir como a aplicação será executada. 
+- **Dockerfile**: Arquivo para criar uma imagem Docker.
 
 ## Módulos
 ### `__init__.py`
