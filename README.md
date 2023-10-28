@@ -68,31 +68,20 @@ Para desenvolver e executar este projeto, é altamente recomendável configurar 
 ```
 pip install virtualenv
 ```
-2. Crie um Diretório para o Ambiente Virtual:
-```
-mkdir venv
-```
-3. Crie um diretório em seu projeto para armazenar o ambiente virtual. 
+2. Crie um diretório em seu projeto para armazenar o ambiente virtual. 
 ```bash
 python -m venv venv
 ``` 
-4. Ative o Ambiente Virtual:
+3. Ative o Ambiente Virtual:
 
-Antes de trabalhar em seu projeto, é necessário ativar o ambiente virtual. Isso isolará as bibliotecas instaladas dentro do ambiente virtual. Use o comando apropriado de acordo com seu sistema operacional:
-
-No Windows:
+Antes de trabalhar em seu projeto, é necessário ativar o ambiente virtual. Isso isolará as bibliotecas instaladas dentro do ambiente virtual. Utilize o comando a seguir para windows:
 
 ``` bash
 venv\Scripts\activate
 ```
-No macOS e Linux:
-
-```bash
-source venv/bin/activate
-```
 Quando o ambiente virtual estiver ativado, você verá o nome do ambiente virtual no prompt de comando, o que indica que você está trabalhando dentro dele.
 
-5. Instale as Dependências do Projeto:
+4. Instale as Dependências do Projeto:
 
 Com o ambiente virtual ativado, navegue até o diretório do seu projeto (onde o arquivo requirements.txt está localizado) e instale as dependências do projeto com o seguinte comando:
 
@@ -101,7 +90,7 @@ pip install -r requirements.txt
 ```
 Isso instalará todas as bibliotecas necessárias para executar a aplicação.
 
-6. Desativando o Ambiente Virtual:
+5. Desativando o Ambiente Virtual:
 
 Quando você terminar de trabalhar em seu projeto, você pode desativar o ambiente virtual. Basta usar o seguinte comando:
 
@@ -144,7 +133,7 @@ Substitua "Nome de Usuário" pelo nome do usuário que está criando a equipe e 
 A API retornará uma mensagem de sucesso junto com a ID única da equipe criada.
 
 ### Listar todas as equipes
-Para listar todas as equipes registradas, faça uma solicitação GET para /api/teams. A API retornará uma lista de todas as equipes com detalhes dos Pokémon em formato JSON.
+Para listar todas as equipes registradas, faça uma solicitação GET para **http://127.0.0.1/api/teams/**. A API retornará uma lista de todas as equipes com detalhes dos Pokémon em formato JSON.
 ```json
 "1": {
         "owner": "n_team",
@@ -195,7 +184,7 @@ Para listar todas as equipes registradas, faça uma solicitação GET para /api/
 ```
 
 ### Buscar uma equipe por ID
-Para buscar uma equipe específica por sua ID única, faça uma solicitação GET para **/api/teams/{id}**, onde {id} é a ID da equipe desejada. A API retornará detalhes da equipe, incluindo os Pokémon que a compõem.
+Para buscar uma equipe específica por sua ID única, faça uma solicitação GET para **http://127.0.0.1/api/teams/{id}**, onde {id} é a ID da equipe desejada. A API retornará detalhes da equipe, incluindo os Pokémon que a compõem.
 ```json
 {
     "owner": "n_team",
