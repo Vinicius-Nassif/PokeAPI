@@ -64,7 +64,7 @@ def create_team():
                 try:
                     # Tente obter as informações do Pokémon a partir da pokeapi.co
                     pokemon_info = get_pokemon_info(name)
-                    if "error" in pokemon_info(name):
+                    if "error" in pokemon_info:
                         invalid_pokemon_names.append(name)
                     else:
                         # Se as informações do Pokémon foram obtidas com sucesso

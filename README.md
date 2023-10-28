@@ -69,8 +69,8 @@ pip install virtualenv
 mkdir venv
 ```
 3. Crie um diretório em seu projeto para armazenar o ambiente virtual. 
-```
-virutalenv venv
+```bash
+python -m venv venv
 ``` 
 4. Ative o Ambiente Virtual:
 
@@ -218,8 +218,19 @@ Para buscar uma equipe específica por sua ID única, faça uma solicitação GE
 }
 ```
 ## Serialização de Dados
-Nas rotas da nossa API, optamos por realizar a serialização dos dados antes de enviá-los como resposta. A serialização é o processo de converter objetos complexos em um formato que seja mais adequado para transmissão e interpretação por outros sistemas. 
+Nas rotas GET da nossa API, optamos por realizar a serialização dos dados antes de enviá-los como resposta. A serialização é o processo de converter objetos complexos em um formato que seja mais adequado para transmissão e interpretação por outros sistemas. 
+
 O intuíto da serialização foi principalmente para tentar manter os dados retornados pela API em formato estruturado, pela legibilidade e redução de dados redudantes.
+
+## Configuração do Docker
+Para facilitar a implantação e execução da aplicação em um ambiente controlado, utilizamos o Docker.
+
+### Dockerfile
+O `Dockerfile` é usado para criar uma imagem Docker da sua aplicação. 
+Utilizando a extensão do Docker, disponibilizada pela Microsoft ao Visual Studio Code, foi construída a imagem da aplicação Flask.
+
+### docker-compose.yml
+O arquivo `docker-compose.yml` é usado para simplificar a execução da aplicação e do banco de dados. Também utilizando a extensão do Docker para o vscode, foi definido como seria aplicação Flask e executado o comando de `compose up` para criar os contêineres e iniciar aplicação no Docker.
 
 ## Observações
 Certifique-se de configurar corretamente a URI do banco de dados no arquivo config.py. O projeto utiliza um banco de dados SQLite por padrão.

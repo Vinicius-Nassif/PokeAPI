@@ -64,3 +64,4 @@ class Pokemon(db.Model):
             "height": self.height,
             "weight": self.weight
         })
+    

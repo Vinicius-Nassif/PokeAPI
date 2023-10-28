@@ -15,7 +15,7 @@ def main():
         print('O arquivo do banco de dados já existe.')
 
     # Inicia o servidor de desenvolvimento do Flask com depuração ativada
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 if __name__ == '__main__':
     main()

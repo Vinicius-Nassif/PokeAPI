@@ -5,3 +5,4 @@ class Config:
     database_file = os.path.join(basedir, 'times.db')
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{database_file}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
